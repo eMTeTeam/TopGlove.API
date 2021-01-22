@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29326.143
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopGlove.Api", "TopGlove.Api\TopGlove.Api.csproj", "{036CE0FD-5A0B-4DB2-BC88-D8D2765B22AF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{036CE0FD-5A0B-4DB2-BC88-D8D2765B22AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{036CE0FD-5A0B-4DB2-BC88-D8D2765B22AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{036CE0FD-5A0B-4DB2-BC88-D8D2765B22AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{036CE0FD-5A0B-4DB2-BC88-D8D2765B22AF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2DC8EC4B-9812-4FF8-94D1-2C00830C5E27}
+	EndGlobalSection
+EndGlobal
