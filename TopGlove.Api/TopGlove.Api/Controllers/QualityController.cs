@@ -33,7 +33,7 @@ namespace TopGlove.Api.Controllers
         {
             try
             {
-                var res = dbContext.ProductQualities.Where(a => a.user == user && a.CreatedDateTime == new DateTime().Date);
+                var res = dbContext.ProductQualities.Where(a => a.user == user && a.CreatedDateTime.Date == DateTime.Today.Date);
                 if (res.Any())
                 {
                     return res.Max(a => a.SerialNumber);

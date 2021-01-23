@@ -31,6 +31,16 @@ namespace TopGlove.Api
             services.AddControllers();
             services.AddCors();
 
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "TopGloveAPI",
+                    Description = "Testing"
+                });
+            });
+
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
             var dbConn = Configuration.GetValue<string>($"DbConnectionStrings:CleverCloud");
@@ -58,6 +68,12 @@ namespace TopGlove.Api
                 c.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader();
+            });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c=>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "TopGlove API V1");
             });
 
             dbContext.Database.EnsureCreated();
