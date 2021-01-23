@@ -12,5 +12,10 @@ namespace TopGlove.Api.Model
         public DateTime ToDate { get; set; }
 
         public string User { get; set; }
+
+        public string Factory { get; set; }
+
+        public string Quality { get; set; }
+        public string Defect { get; set; }
     }
 }

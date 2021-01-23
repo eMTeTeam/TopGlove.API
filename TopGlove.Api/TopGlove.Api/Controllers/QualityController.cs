@@ -9,7 +9,7 @@ using TopGlove.Api.Model;
 
 namespace TopGlove.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/v1")]
     [ApiController]
     public class QualityController : ControllerBase
     {
@@ -20,23 +20,36 @@ namespace TopGlove.Api.Controllers
 
         }
         // GET: api/Quality
-        [HttpGet]
-        public IEnumerable<ProductQuality> Get()
+        [HttpGet("GetAllDetails")]
+        public IEnumerable<ProductQuality> GetAllDetails()
         {
             return dbContext.ProductQualities;
         }
 
         // GET: api/Quality/5
-        [HttpGet("{user}", Name = "Get")]
-        public int Get(string user)
+        //[HttpGet("{user}", Name = "Get")]
+        [HttpGet("GetMaxCount")]
+        public int GetMaxCount(string user)
         {
-            var res = dbContext.ProductQualities.Where(a => a.user == user);
-            return res.Max(a => a.SerialNumber);
+            try
+            {
+                var res = dbContext.ProductQualities.Where(a => a.user == user && a.CreatedDateTime == new DateTime().Date);
+                if (res.Any())
+                {
+                    return res.Max(a => a.SerialNumber);
+                }
+                else
+                    return 0;
+            }
+            catch
+            {
+                return 0;
+            }
         }
 
         // POST: api/Quality
-        [HttpPost]
-        public IActionResult Post([FromBody] ProductQuality product)
+        [HttpPost("AddQualityDetail")]
+        public IActionResult AddQualityDetail([FromBody] ProductQuality product)
         {
             product.ID = Guid.NewGuid();
             product.CreatedDateTime = DateTime.UtcNow;
@@ -55,8 +68,8 @@ namespace TopGlove.Api.Controllers
         }
 
         // PUT: api/Quality/5
-        [HttpPut]
-        public IActionResult Put([FromBody] ProductQuality productQuality)
+        [HttpPost("Update")]
+        public IActionResult Update([FromBody] ProductQuality productQuality)
         {
             try
             {
@@ -86,7 +99,7 @@ namespace TopGlove.Api.Controllers
         }
 
         // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
+        [HttpDelete("Delete/{id}")]
         public IActionResult Delete(string id)
         {
             try
@@ -114,30 +127,28 @@ namespace TopGlove.Api.Controllers
             var response = dbContext.ProductQualities.Where(a => a.CreatedDateTime.Date >= requestModel.FromDate.Date
                         && a.CreatedDateTime.Date <= requestModel.ToDate.Date);
 
-            if (!string.IsNullOrWhiteSpace(requestModel.User))
+            if (!string.IsNullOrWhiteSpace(requestModel.User) && response.Any())
             {
                 response = response.Where(a => a.user == requestModel.User);
+            }
+
+            if (!string.IsNullOrWhiteSpace(requestModel.Factory) && response.Any())
+            {
+                response = response.Where(a => a.Factory == requestModel.Factory);
+            }
+
+            if (!string.IsNullOrWhiteSpace(requestModel.Quality) && response.Any())
+            {
+                response = response.Where(a => a.Quality == requestModel.Quality);
+            }
+
+            if (!string.IsNullOrWhiteSpace(requestModel.Defect) && response.Any())
+            {
+                response = response.Where(a => a.DefectDetails == requestModel.Defect);
             }
 
             return new OkObjectResult(response);
         }
 
-        [HttpPost("FilterWithUser")]
-        public IActionResult FilterWithUser(string user)
-        {
-            try
-            {
-                if (!string.IsNullOrWhiteSpace(user))
-                {
-                    var response = dbContext.ProductQualities.Where(a => a.user == user);
-                    return new OkObjectResult(response);
-                }
-                return Ok();
-            }
-            catch
-            {
-                return BadRequest("Something went wrong");
-            }
-        }
     }
 }
