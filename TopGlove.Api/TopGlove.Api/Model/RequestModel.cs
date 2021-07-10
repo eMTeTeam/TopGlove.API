@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace TopGlove.Api.Model
 {
@@ -16,6 +13,9 @@ namespace TopGlove.Api.Model
         public string Factory { get; set; }
 
         public string Quality { get; set; }
+
         public string Defect { get; set; }
+
+        public string WorkStation { get; set; }
     }
 }

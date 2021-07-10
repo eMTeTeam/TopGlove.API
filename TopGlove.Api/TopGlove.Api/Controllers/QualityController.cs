@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TopGlove.Api.Data;
 using TopGlove.Api.Model;
@@ -13,17 +11,18 @@ namespace TopGlove.Api.Controllers
     [ApiController]
     public class QualityController : ControllerBase
     {
-        private ProductQualityDbContext dbContext;
-        public QualityController(ProductQualityDbContext _dbContext)
-        {
-            dbContext = _dbContext;
+        private readonly ProductQualityDbContext _dbContext;
 
+        public QualityController(ProductQualityDbContext dbContext)
+        {
+            _dbContext = dbContext;
         }
+
         // GET: api/Quality
         [HttpGet("GetAllDetails")]
         public IEnumerable<ProductQuality> GetAllDetails()
         {
-            return dbContext.ProductQualities;
+            return _dbContext.ProductQualities;
         }
 
         // GET: api/Quality/5
@@ -33,7 +32,7 @@ namespace TopGlove.Api.Controllers
         {
             try
             {
-                var res = dbContext.ProductQualities.Where(a => a.user == user && a.CreatedDateTime.Date == DateTime.Today.Date);
+                var res = _dbContext.ProductQualities.Where(a => a.User == user && a.CreatedDateTime.Date == DateTime.Today.Date);
                 if (res.Any())
                 {
                     return res.Max(a => a.SerialNumber);
@@ -52,13 +51,13 @@ namespace TopGlove.Api.Controllers
         public IActionResult AddQualityDetail([FromBody] ProductQuality product)
         {
             product.ID = Guid.NewGuid();
-            product.CreatedDateTime = DateTime.UtcNow;
+            // product.CreatedDateTime = DateTime.UtcNow;
 
             try
             {
-                dbContext.ProductQualities.Add(product);
-                dbContext.SaveChanges();
-                return new OkObjectResult(product);
+                _dbContext.ProductQualities.Add(product);
+                _dbContext.SaveChanges();
+                return Ok(product);
             }
             catch
             {
@@ -75,21 +74,22 @@ namespace TopGlove.Api.Controllers
             {
                 //Guid.TryParse(productQuality.ID, out Guid result);
 
-                var res = dbContext.ProductQualities.Where(a => a.ID == productQuality.ID).FirstOrDefault();
-
-                res.DefectDetails = productQuality.DefectDetails;
-                res.Factory = productQuality.Factory;
-                res.FiringOrRework = productQuality.FiringOrRework;
-                res.Quality = productQuality.Quality;
-                res.Size = productQuality.Size;
-                res.TypeOfFormer = productQuality.TypeOfFormer;
+                var res = _dbContext.ProductQualities.FirstOrDefault(a => a.ID == productQuality.ID);
 
                 if (res != null)
                 {
-                    dbContext.ProductQualities.Update(res);
-                    dbContext.SaveChanges();
+                    res.DefectDetails = productQuality.DefectDetails;
+                    res.Factory = productQuality.Factory;
+                    res.FiringOrRework = productQuality.FiringOrRework;
+                    res.Quality = productQuality.Quality;
+                    res.Size = productQuality.Size;
+                    res.TypeOfFormer = productQuality.TypeOfFormer;
+
+                    _dbContext.ProductQualities.Update(res);
+                    _dbContext.SaveChanges();
                 }
-                return new OkObjectResult(res);
+
+                return Ok(res);
             }
             catch (Exception ex)
             {
@@ -106,14 +106,14 @@ namespace TopGlove.Api.Controllers
             {
                 Guid.TryParse(id, out Guid result);
 
-                var res = dbContext.ProductQualities.Where(a => a.ID == result).FirstOrDefault();
-
+                var res = _dbContext.ProductQualities.FirstOrDefault(a => a.ID == result);
                 if (res != null)
                 {
-                    dbContext.ProductQualities.Remove(res);
-                    dbContext.SaveChanges();
+                    _dbContext.ProductQualities.Remove(res);
+                    _dbContext.SaveChanges();
                 }
-                return new OkResult();
+
+                return Ok(true);
             }
             catch
             {
@@ -124,12 +124,12 @@ namespace TopGlove.Api.Controllers
         [HttpPost("FilteredItems")]
         public IActionResult GetProductQualityWithUser(RequestModel requestModel)
         {
-            var response = dbContext.ProductQualities.Where(a => a.CreatedDateTime.Date >= requestModel.FromDate.Date
+            var response = _dbContext.ProductQualities.Where(a => a.CreatedDateTime.Date >= requestModel.FromDate.Date
                         && a.CreatedDateTime.Date <= requestModel.ToDate.Date);
 
             if (!string.IsNullOrWhiteSpace(requestModel.User) && response.Any())
             {
-                response = response.Where(a => a.user == requestModel.User);
+                response = response.Where(a => a.User == requestModel.User);
             }
 
             if (!string.IsNullOrWhiteSpace(requestModel.Factory) && response.Any())
@@ -147,8 +147,7 @@ namespace TopGlove.Api.Controllers
                 response = response.Where(a => a.DefectDetails == requestModel.Defect);
             }
 
-            return new OkObjectResult(response);
+            return Ok(response);
         }
-
     }
 }
