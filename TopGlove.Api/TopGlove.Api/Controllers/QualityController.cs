@@ -84,6 +84,7 @@ namespace TopGlove.Api.Controllers
                     res.Quality = productQuality.Quality;
                     res.Size = productQuality.Size;
                     res.TypeOfFormer = productQuality.TypeOfFormer;
+                    res.Shift = productQuality.Shift;
 
                     _dbContext.ProductQualities.Update(res);
                     _dbContext.SaveChanges();

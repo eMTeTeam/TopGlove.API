@@ -15,5 +15,6 @@ namespace TopGlove.Api.Model
         public string DefectDetails { get; set; }
         public string Quality { get; set; }
         public string WorkStation { get; set; }
+        public string Shift { get; set; }
     }
 }
