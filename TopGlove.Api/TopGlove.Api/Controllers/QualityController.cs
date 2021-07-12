@@ -148,6 +148,11 @@ namespace TopGlove.Api.Controllers
                 response = response.Where(a => a.DefectDetails == requestModel.Defect);
             }
 
+            if (!string.IsNullOrWhiteSpace(requestModel.WorkStation) && response.Any())
+            {
+                response = response.Where(a => a.WorkStation == requestModel.WorkStation);
+            }
+
             return Ok(response);
         }
     }
