@@ -9,7 +9,6 @@ namespace TopGlove.Api.Extension
 {
     public static class ExcelGenerator
     {
-
         public static byte[] CreateExcel<T>(this List<T> list)
         {
             Type tType = typeof(T);
@@ -23,31 +22,37 @@ namespace TopGlove.Api.Extension
             {
                 attribute = property.GetCustomAttributes(typeof(DisplayNameAttribute), false)
                                            .Cast<DisplayNameAttribute>().FirstOrDefault();
+
+                if (property.Name.Equals("ID", StringComparison.OrdinalIgnoreCase)) continue;
+
                 headers.Add(property.Name, attribute == null ? property.Name : attribute.DisplayName);
             }
-
 
             using (var workbook = new XLWorkbook())
             {
                 var worksheet = workbook.Worksheets.Add(sheetName);
 
                 // Add Header Columns
-                var count = 0;
+                var count = 1;
                 foreach (var entry in headers)
                 {
-                    worksheet.Cell(0, count++).Value = entry.Value;
+                    worksheet.Cell(1, count).Value = entry.Value;
+                    count++;
                 }
 
                 // Add Value
-                for (int j = 0; j < list.Count; j++)
+                int rowNumber = 2;
+                for (int row = 0; row < list.Count; row++)
                 {
-                    var item = list[j];
-                    int i = 0;
+                    var item = list[row];
+                    int column = 1;
                     foreach (KeyValuePair<string, string> entry in headers)
                     {
                         var y = typeof(T).InvokeMember(entry.Key.ToString(), BindingFlags.GetProperty, null, item, null);
-                        worksheet.Cell(j, i++).Value = (y == null) ? "" : y.ToString();
+                        worksheet.Cell(rowNumber, column).Value = (y == null) ? "" : y.ToString();
+                        column++;
                     }
+                    rowNumber++;
                 }
 
                 using (var stream = new MemoryStream())

@@ -1,7 +1,9 @@
 ﻿using System;
+using TopGlove.Api.Extension;
 
 namespace TopGlove.Api.Model
 {
+    [DisplayName("ProductQuality")]
     public class ProductQuality
     {
         public Guid ID { get; set; }

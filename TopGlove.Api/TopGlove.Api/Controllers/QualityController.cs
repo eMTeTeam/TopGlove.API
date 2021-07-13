@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using TopGlove.Api.Data;
 using TopGlove.Api.Model;
+using TopGlove.Api.Extension;
 
 namespace TopGlove.Api.Controllers
 {
@@ -51,7 +52,7 @@ namespace TopGlove.Api.Controllers
         public IActionResult AddQualityDetail([FromBody] ProductQuality product)
         {
             product.ID = Guid.NewGuid();
-            // product.CreatedDateTime = DateTime.UtcNow;
+            product.CreatedDateTime = product.CreatedDateTime.Date;
 
             try
             {
@@ -72,8 +73,6 @@ namespace TopGlove.Api.Controllers
         {
             try
             {
-                //Guid.TryParse(productQuality.ID, out Guid result);
-
                 var res = _dbContext.ProductQualities.FirstOrDefault(a => a.ID == productQuality.ID);
 
                 if (res != null)
@@ -125,6 +124,25 @@ namespace TopGlove.Api.Controllers
         [HttpPost("FilteredItems")]
         public IActionResult GetProductQualityWithUser(RequestModel requestModel)
         {
+            var response = GetFilteredResult(requestModel);
+            return Ok(response);
+        }
+
+        [HttpPost("GenerateExcel")]
+        public IActionResult GenerateExcel(RequestModel requestModel)
+        {
+            var response = GetFilteredResult(requestModel);
+            response = response.OrderByDescending(x => x.SerialNumber).ToList();
+            var excelStream = response.CreateExcel<ProductQuality>();
+
+            var fileName = $"TopGlove_{DateTime.Now}.xlsx";
+            return File(excelStream,
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        fileName);
+        }
+
+        private List<ProductQuality> GetFilteredResult(RequestModel requestModel)
+        {
             var response = _dbContext.ProductQualities.Where(a => a.CreatedDateTime.Date >= requestModel.FromDate.Date
                         && a.CreatedDateTime.Date <= requestModel.ToDate.Date);
 
@@ -153,7 +171,7 @@ namespace TopGlove.Api.Controllers
                 response = response.Where(a => a.WorkStation == requestModel.WorkStation);
             }
 
-            return Ok(response);
+            return response.ToList();
         }
     }
 }
