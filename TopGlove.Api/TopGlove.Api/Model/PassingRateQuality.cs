@@ -11,6 +11,7 @@ namespace TopGlove.Api.Model
         public string Factory { get; set; }
         public string TypeOfFormer { get; set; }
         public string Quality { get; set; }
+        public string FiringOrRework { get; set; }
         public IEnumerable<ProductQuality> ProductQualities { get; set; }
 
     }
@@ -24,6 +25,6 @@ namespace TopGlove.Api.Model
         public int RejectCount { get; set; }
         public int TotalCount { get; set; }
         public double PassingRate { get; set; }
-
+        public string Remark { get; set; }
     }
 }

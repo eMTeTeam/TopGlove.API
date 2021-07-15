@@ -209,11 +209,13 @@ namespace TopGlove.Api.Controllers
                     pq.CreatedDateTime,
                     pq.Factory,
                     pq.TypeOfFormer,
+                    pq.FiringOrRework
                 }).Select(prq => new PassingRateQualityGroup()
                 {
                     CreatedDateTime = prq.Key.CreatedDateTime,
                     Factory = prq.Key.Factory,
                     TypeOfFormer = prq.Key.TypeOfFormer,
+                    FiringOrRework = prq.Key.FiringOrRework,
                     ProductQualities = prq.ToList()
                 });
 
@@ -226,6 +228,7 @@ namespace TopGlove.Api.Controllers
                         CreatedDateTime = item.CreatedDateTime,
                         Factory = item.Factory,
                         TypeOfFormer = item.TypeOfFormer,
+                        Remark = item.FiringOrRework,
                         TotalCount = item.ProductQualities.Count(),
                         AcceptCount = item.ProductQualities.Where(a => a.Quality.ToLower() == "accept").Count(),
                         RejectCount = item.ProductQualities.Where(a => a.Quality.ToLower() != "accept").Count(),
