@@ -141,6 +141,32 @@ namespace TopGlove.Api.Controllers
                         fileName);
         }
 
+        [HttpPost("GetPassingRate")]
+        public IActionResult GetPassingRate(RequestModel requestModel)
+        {
+            var response = GetFilteredResult(requestModel);
+            response = response.OrderByDescending(x => x.SerialNumber).ToList();
+
+            var passrateResponse = PassingRateQualities(response);
+
+            return Ok(passrateResponse);
+
+        }
+
+        [HttpPost("GetPassingRateExcel")]
+        public IActionResult GetPassingRateExcel(RequestModel requestModel)
+        {
+            var response = GetFilteredResult(requestModel);
+            response = response.OrderByDescending(x => x.CreatedDateTime).ToList();
+            var passrateResponse = PassingRateQualities(response);
+            var excelStream = passrateResponse.CreateExcel<PassingRateQuality>();
+
+            var fileName = $"TopGlove_{DateTime.Now}.xlsx";
+            return File(excelStream,
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        fileName);
+        }
+
         private List<ProductQuality> GetFilteredResult(RequestModel requestModel)
         {
             var response = _dbContext.ProductQualities.Where(a => a.CreatedDateTime.Date >= requestModel.FromDate.Date
@@ -172,6 +198,51 @@ namespace TopGlove.Api.Controllers
             }
 
             return response.ToList();
+        }
+
+        private List<PassingRateQuality> PassingRateQualities(List<ProductQuality> productQualities)
+        {
+            if (productQualities.Count > 0)
+            {
+                var consolidatedProductQualities = productQualities.GroupBy(pq => new
+                {
+                    pq.CreatedDateTime,
+                    pq.Factory,
+                    pq.TypeOfFormer,
+                }).Select(prq => new PassingRateQualityGroup()
+                {
+                    CreatedDateTime = prq.Key.CreatedDateTime,
+                    Factory = prq.Key.Factory,
+                    TypeOfFormer = prq.Key.TypeOfFormer,
+                    ProductQualities = prq.ToList()
+                });
+
+                var response = new List<PassingRateQuality>();
+
+                foreach (var item in consolidatedProductQualities)
+                {
+                    var temp = new PassingRateQuality
+                    {
+                        CreatedDateTime = item.CreatedDateTime,
+                        Factory = item.Factory,
+                        TypeOfFormer = item.TypeOfFormer,
+                        TotalCount = item.ProductQualities.Count(),
+                        AcceptCount = item.ProductQualities.Where(a => a.Quality.ToLower() == "accept").Count(),
+                        RejectCount = item.ProductQualities.Where(a => a.Quality.ToLower() != "accept").Count(),
+                    };
+
+                    if (temp.TotalCount > 0)
+                        temp.PassingRate = (temp.AcceptCount * 100) / temp.TotalCount;
+
+                    response.Add(temp);
+                }
+
+                return response;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

@@ -1,0 +1,7 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/TopGlove.Api/TopGlove.Api/bin/Debug/netcoreapp3.1
+/TopGlove.Api/TopGlove.Api/obj
+/TopGlove.Api/.vs/TopGlove.Api/v16
