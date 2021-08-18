@@ -19,11 +19,11 @@ namespace TopGlove.Api.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginModel loginModel)
         {
-            if(!string.IsNullOrEmpty(loginModel.UserId))
+            if (!string.IsNullOrEmpty(loginModel.UserId))
             {
-                var user = _dbContext.Users.FirstOrDefault(x => x.UserId == loginModel.UserId);
+                var user = _dbContext.Users.FirstOrDefault(x => x.UserId == loginModel.UserId && x.IsActive == true);
 
-                if(user != null)
+                if (user != null)
                 {
                     return Ok(user);
                 }

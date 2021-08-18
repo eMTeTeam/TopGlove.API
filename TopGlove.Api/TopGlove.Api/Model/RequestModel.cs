@@ -17,5 +17,7 @@ namespace TopGlove.Api.Model
         public string Defect { get; set; }
 
         public string WorkStation { get; set; }
+        public string Size { get; set; }
+        public string TypeOfFormer { get; set; }
     }
 }

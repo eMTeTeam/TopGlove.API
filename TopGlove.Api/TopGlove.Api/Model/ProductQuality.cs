@@ -18,5 +18,8 @@ namespace TopGlove.Api.Model
         public string Quality { get; set; }
         public string WorkStation { get; set; }
         public string Shift { get; set; }
+        public string BatchNumber { get; set; }
+        public DateTime UploadedDateTime { get; set; }
+        public string Notes { get; set; }
     }
 }

@@ -12,6 +12,7 @@ namespace TopGlove.Api.Model
         public string TypeOfFormer { get; set; }
         public string Quality { get; set; }
         public string FiringOrRework { get; set; }
+        public string BatchNumber { get; set; }
         public IEnumerable<ProductQuality> ProductQualities { get; set; }
 
     }
@@ -26,5 +27,6 @@ namespace TopGlove.Api.Model
         public int TotalCount { get; set; }
         public double PassingRate { get; set; }
         public string Remark { get; set; }
+        public string BatchNumber { get; set; }
     }
 }

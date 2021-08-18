@@ -53,6 +53,7 @@ namespace TopGlove.Api.Controllers
         {
             product.ID = Guid.NewGuid();
             product.CreatedDateTime = product.CreatedDateTime.Date;
+            product.UploadedDateTime = DateTime.UtcNow;
 
             try
             {
@@ -197,6 +198,16 @@ namespace TopGlove.Api.Controllers
                 response = response.Where(a => a.WorkStation == requestModel.WorkStation);
             }
 
+            if (!string.IsNullOrWhiteSpace(requestModel.TypeOfFormer) && response.Any())
+            {
+                response = response.Where(a => a.TypeOfFormer == requestModel.TypeOfFormer);
+            }
+
+            if (!string.IsNullOrWhiteSpace(requestModel.Size) && response.Any())
+            {
+                response = response.Where(a => a.Size == requestModel.Size);
+            }
+
             return response.ToList();
         }
 
@@ -209,12 +220,14 @@ namespace TopGlove.Api.Controllers
                     pq.CreatedDateTime,
                     pq.Factory,
                     pq.TypeOfFormer,
-                    pq.FiringOrRework
+                    pq.FiringOrRework,
+                    pq.BatchNumber
                 }).Select(prq => new PassingRateQualityGroup()
                 {
                     CreatedDateTime = prq.Key.CreatedDateTime,
                     Factory = prq.Key.Factory,
                     TypeOfFormer = prq.Key.TypeOfFormer,
+                    BatchNumber = prq.Key.BatchNumber,
                     FiringOrRework = prq.Key.FiringOrRework,
                     ProductQualities = prq.ToList()
                 });
@@ -229,6 +242,7 @@ namespace TopGlove.Api.Controllers
                         Factory = item.Factory,
                         TypeOfFormer = item.TypeOfFormer,
                         Remark = item.FiringOrRework,
+                        BatchNumber = item.BatchNumber,
                         TotalCount = item.ProductQualities.Count(),
                         AcceptCount = item.ProductQualities.Where(a => a.Quality.ToLower() == "accept").Count(),
                         RejectCount = item.ProductQualities.Where(a => a.Quality.ToLower() != "accept").Count(),
